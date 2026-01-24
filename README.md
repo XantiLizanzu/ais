@@ -1,1 +1,3 @@
-`fastapi dev app/main.py --port 80`
+# Run the services
+
+`docker compose up -d`
