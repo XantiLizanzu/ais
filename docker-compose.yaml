@@ -1,0 +1,28 @@
+services:
+  ingestion:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ingestion
+    ports:
+      - "8000:80"
+    volumes:
+      - ./app:/code/app
+      - graph_data:/data
+    environment:
+      - PYTHONUNBUFFERED=1
+  sparql:
+    build:
+      context: .
+      dockerfile: sparql.Dockerfile
+    container_name: sparql
+    ports:
+      - "8001:81"
+    volumes:
+      - ./app:/code/app
+      - graph_data:/data
+    environment:
+      - PYTHONUNBUFFERED=1
+
+volumes:
+  graph_data:
