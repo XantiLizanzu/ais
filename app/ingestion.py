@@ -17,6 +17,8 @@ NEN2767 = Namespace("https://data.rws.nl/def/nen2767/")
 GRAPH_FILE = Path("/data/knowledge_graph.ttl")
 GRAPH_FILE.parent.mkdir(parents=True, exist_ok=True)
 
+oosterscheldekering_part1 = URIRef("https://data.rws.nl/data/oosterscheldekering_part0")
+
 # Load or initialize graph
 g = Graph()
 if GRAPH_FILE.exists():
@@ -25,7 +27,6 @@ else:
     # Initialize graph with default data
     oosterscheldekering = URIRef("https://data.rws.nl/data/oosterscheldekering")
     g.add((oosterscheldekering, RDF.type, OTL.StormSearchBarrier))
-    oosterscheldekering_part1 = URIRef("https://data.rws.nl/data/oosterscheldekering_part0")
     g.add((oosterscheldekering_part1, RDF.type, OTL.Part))
     g.add((oosterscheldekering, OTL.hasPart, oosterscheldekering_part1))
     g.serialize(destination=GRAPH_FILE, format="turtle")
@@ -51,7 +52,7 @@ async def get_knowledge_graph() -> StreamingResponse:
 
     plt.figure(figsize=(12, 12))
 
-    pos = nx.spectral_layout(G, scale=0.5, center=(0, 0))
+    pos = nx.planar_layout(G, scale=0.5, center=(0, 0))
 
     labels = {n: "/".join(n.split("/")[::-1][:2][::-1]) if isinstance(n, str) else str(n) for n in G.nodes()}
 
@@ -80,13 +81,11 @@ async def get_knowledge_graph() -> StreamingResponse:
 
 @app.post("/disk-inspections/")
 def ingest_disk_inspections(disk_inspections: list[DiskInspection]) -> None:
-    global inspection_n
     oosterscheldekering_part1 = URIRef("https://data.rws.nl/data/oosterscheldekering_part0")
-    part1_inspection = URIRef(f"https://data.rws.nl/data/inspection_{inspection_n}")
+    part1_inspection = URIRef(f"https://data.rws.nl/data/inspection_0")
     g.add((oosterscheldekering_part1, OTL.hasInspection, part1_inspection))
     g.add((part1_inspection, RDF.type, OTL.Inspection))
-    part1_inspection_score = URIRef(f"https://data.rws.nl/data/inspection_score_{inspection_n}")
-    inspection_n += 1
+    part1_inspection_score = URIRef(f"https://data.rws.nl/data/inspection_score_0")
     g.add((part1_inspection, OTL.hasNEN2767Condition, part1_inspection_score))
     g.add((part1_inspection_score, RDF.value, NEN2767.Good))
     g.add((part1_inspection_score, RDF.type, NEN2767.ConditionScore))
@@ -97,10 +96,10 @@ def ingest_disk_inspections(disk_inspections: list[DiskInspection]) -> None:
 @app.post("/reports/")
 def ingest_reports(files: list[UploadFile]):
     global inspection_n
-    part2_inspection = URIRef(f"https://data.rws.nl/data/inspection_{inspection_n}")
+    part2_inspection = URIRef(f"https://data.rws.nl/data/inspection_1")
     g.add((oosterscheldekering_part1, OTL.hasInspection, part2_inspection))
     g.add((part2_inspection, RDF.type, OTL.Inspection))
-    part2_inspection_score = URIRef(f"https://data.rws.nl/data/inspection_score_{inspection_n}")
+    part2_inspection_score = URIRef(f"https://data.rws.nl/data/inspection_score_1")
     inspection_n += 1
     g.add((part2_inspection, OTL.hasNEN2767Condition, part2_inspection_score))
     g.add((part2_inspection_score, RDF.value, NEN2767.BelowAverage))

@@ -95,7 +95,7 @@ def get_status(asset_id: str, part_id: int) -> list[tuple[str, str]]:
 
     SELECT ?condition_value ?inspection_date WHERE {{
         ex:{asset_id} otl:hasPart ?part .
-        FILTER(STRENDS(STR(?part), "/data/oosterscheldekering_part{part_id}"))
+        FILTER(STRENDS(STR(?part), "/data/{asset_id}_part{part_id}"))
         ?part otl:hasInspection ?inspection .
         ?inspection otl:hasNEN2767Condition ?condition .
         ?condition rdf:value ?condition_value .
