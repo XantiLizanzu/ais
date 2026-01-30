@@ -1,0 +1,198 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "Ingestion Service",
+        "summary": "Ingestion service for the Rijkswaterstaat Beheerobjecten knowledge graph. Able to ingest data from external systems (DISK, Ultimo, and Meridian).",
+        "version": "0.0.0"
+    },
+    "paths": {
+        "/knowledge-graph/": {
+            "get": {
+                "summary": "Get Knowledge Graph",
+                "operationId": "get_knowledge_graph_knowledge_graph__get",
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/disk-inspections/": {
+            "post": {
+                "summary": "Ingest Disk Inspections",
+                "operationId": "ingest_disk_inspections_disk_inspections__post",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "items": {
+                                    "$ref": "#/components/schemas/DiskInspection"
+                                },
+                                "type": "array",
+                                "title": "Disk Inspections"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/reports/": {
+            "post": {
+                "summary": "Ingest Reports",
+                "operationId": "ingest_reports_reports__post",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Body_ingest_reports_reports__post"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Body_ingest_reports_reports__post": {
+                "properties": {
+                    "files": {
+                        "items": {
+                            "type": "string",
+                            "format": "binary"
+                        },
+                        "type": "array",
+                        "title": "Files"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "files"
+                ],
+                "title": "Body_ingest_reports_reports__post"
+            },
+            "DiskInspection": {
+                "properties": {
+                    "asset_id": {
+                        "type": "integer",
+                        "title": "Asset Id"
+                    },
+                    "component_id": {
+                        "type": "integer",
+                        "title": "Component Id"
+                    },
+                    "condition": {
+                        "type": "string",
+                        "title": "Condition"
+                    },
+                    "inspection_date": {
+                        "type": "string",
+                        "format": "date-time",
+                        "title": "Inspection Date"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "asset_id",
+                    "component_id",
+                    "condition",
+                    "inspection_date"
+                ],
+                "title": "DiskInspection"
+            },
+            "HTTPValidationError": {
+                "properties": {
+                    "detail": {
+                        "items": {
+                            "$ref": "#/components/schemas/ValidationError"
+                        },
+                        "type": "array",
+                        "title": "Detail"
+                    }
+                },
+                "type": "object",
+                "title": "HTTPValidationError"
+            },
+            "ValidationError": {
+                "properties": {
+                    "loc": {
+                        "items": {
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "integer"
+                                }
+                            ]
+                        },
+                        "type": "array",
+                        "title": "Location"
+                    },
+                    "msg": {
+                        "type": "string",
+                        "title": "Message"
+                    },
+                    "type": {
+                        "type": "string",
+                        "title": "Error Type"
+                    }
+                },
+                "type": "object",
+                "required": [
+                    "loc",
+                    "msg",
+                    "type"
+                ],
+                "title": "ValidationError"
+            }
+        }
+    }
+}
